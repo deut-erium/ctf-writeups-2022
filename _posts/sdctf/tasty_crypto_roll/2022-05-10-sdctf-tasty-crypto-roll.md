@@ -491,7 +491,7 @@ backtracking on contradictions
 mp = dict()
 codes = sum([[i, i] for i in range(256)], start=[]) 
 # notice that the range is changed from [0xb0, 0x1b0) to [0, 256). 
-It's just for relabeling.
+# It's just for relabeling.
 random.seed(key1)
 random.shuffle(codes)
 sboxes = [codes[i*4:(i+1)*4] for i in range(128)]
@@ -623,5 +623,5 @@ for x in answers:
 > b'sdctf{r0l1-LR~pWn.c6yPtO_wi7h,ECB:I5*b8d!cQvJmLxgX95saANMFSeU}'
 > ```
 
-full script in [solve2.py](solve2.py)
+full script in [solve2.py](./solve2.py)
 
