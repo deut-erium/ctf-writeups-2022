@@ -1,5 +1,18 @@
+---
+tags: cryptography AES z3 substitution permutation
+aside:
+  toc: true
+sidebar:
+  nav: aboutnav
+author: deuterium
+excerpt_separator: <!--more-->
+key: sdctftastycryptoroll
+---
+
+
 # Tasty Crypto Roll
 ## Description
+```
 CRYPTO - Hard
 Tasty Crypto Roll
 Bob, the genius intern at our company, invented AES-improved. It is based on AES but with layers after layers of proprietary encryption techniques on top of it.
@@ -12,6 +25,7 @@ Encrypted file
 Note
 The intended solution requires very little brute force and runs under 5 seconds on our machine.
 By k3v1n
+```
 
 ## Source
 ```python
