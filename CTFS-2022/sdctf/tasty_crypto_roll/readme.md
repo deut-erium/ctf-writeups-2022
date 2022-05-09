@@ -196,7 +196,7 @@ test flag it seemed to work fine. There could only be one possibility
 But how would I find `key1` now?  
 
 #### Missed Catch
-A teammate soon pointed out, that since there are only 256 distinct values in
+@Utaha#6878 pointed out, that since there are only 256 distinct values in
 `codes` each repeated twice, and each character encoded to some `b"0"` or `b"1"`  
 byte strings of length 16, It must be encrypted to the same block always.  
 Since the flag is `55*4 = 220` such 16-byte codes and each code is used twice  
@@ -317,6 +317,7 @@ possible satisfying values. So the admins have not been so cheeky afterall
 
 ## Full [script](solve.py)
 Note that it takes a couple of seconds to find the z3 model  
+
 ```python
 import random
 from Crypto.Cipher import AES
@@ -462,5 +463,151 @@ else:
     print("failed to solve")
 ``` 
 
-Pretty much enjoyed the challenge!  
-Have fun!  
+
+### Alternate Solution by teammate (Utaha#6878)  
+
+All due regards to him for solving the challenge while I was stuck over finding  
+`key1` XD
+
+All parts will be almost same except the substitution solving part, which he  
+did by manual bruteforcing i.e. recursively enumerating all mappings and
+backtracking on contradictions
+
+```python
+mp = dict()
+codes = sum([[i, i] for i in range(256)], start=[]) 
+# notice that the range is changed from [0xb0, 0x1b0) to [0, 256). 
+It's just for relabeling.
+random.seed(key1)
+random.shuffle(codes)
+sboxes = [codes[i*4:(i+1)*4] for i in range(128)]
+
+def match(a, b):
+	"""
+	equate two objects elementwise ignoring if the entry is -1
+	"""
+    for x, y in zip(a, b):
+        if x == -1 or y == -1:
+            continue
+        if x != y:
+            return False
+    return True
+
+answers = []
+
+def getFlag(cip, sboxes, mp): 
+# get the flag based on current mapping, unknown char will be shown as '?'
+    res = []
+    for c in cip:
+        afterMap = [mp.get(x, -1) for x in c]
+        found = False
+        for i, s in enumerate(sboxes):
+            if s == afterMap:
+                res.append(i)
+                found = True
+                break
+        if not found:
+            res.append(ord('?'))
+    return bytes(res)
+
+
+def brute(cip, sboxes, mp):
+    """
+    cip and sboxes remain unchanged throughout the recursive call, 
+    but I feel bad using global varaibles.
+    """
+    if DEBUG:
+        print(getFlag(cip, sboxes, mp))
+
+    # check is finished
+    isFinished = True
+    for c in cip:
+        if all(x in mp for x in c):
+            pass
+        else:
+            isFinished = False
+
+    if isFinished:
+        answers.append(getFlag(cip, sboxes, mp))
+        print("Found an answer!!!!!!!")
+        return
+
+    # try matching
+    isContradiction = False
+    mp = mp.copy()
+
+    # Find the one with least possible matches.
+    min_pos = 256
+    index = -1
+
+    for idx, c in enumerate(cip):
+        afterMap = [mp.get(x, -1) for x in c]
+        if -1 not in afterMap:
+            continue
+
+        matches = [s for s in sboxes if match(s, afterMap)]
+
+        if len(matches) == 0:
+            isContradiction = True
+            break
+
+        if min_pos > len(matches):
+            index = idx
+            min_pos = len(matches)
+
+    if isContradiction:
+        return
+
+    # now bruteforce all possibilities
+    assert index != -1
+    afterMap = [mp.get(x, -1) for x in cip[index]]
+    matches = [s for s in sboxes if match(s, afterMap)]
+    for m in matches:
+        for x, y in zip(cip[index], m):
+            mp[x] = y
+        brute(cip, sboxes, mp)
+
+# This is based on the repetition
+for _ in [132, 197]:
+    mp = {35: 224, 109: 144, 4: _}
+    brute(cip, sboxes, mp)
+
+print("Answers:")
+answers = list(set(answers))
+for x in answers:
+    print(b"sdctf{" + x + b"}")
+
+# The fourth one is the actual answer
+```
+
+> ```
+> Ciphertext repetition:
+> [4, 5, 4, 6]
+> [34, 35, 36, 35]
+> [109, 60, 110, 109]
+> Sbox repetition:
+> [132, 93, 132, 211]
+> [197, 32, 197, 248]
+> [144, 86, 67, 144]
+> [165, 224, 27, 224]
+> Found an answer!!!!!!!
+> Found an answer!!!!!!!
+> Found an answer!!!!!!!
+> Found an answer!!!!!!!
+> Found an answer!!!!!!!
+> Found an answer!!!!!!!
+> Found an answer!!!!!!!
+> Found an answer!!!!!!!
+> Answers:
+> b'sdctf{r0l1-LR~pWn.c6yPtO_wi7h,ECB:I5*b8d!KQvJmLxgX95saANMFSeU}'
+> b'sdctf{r0l1-uR~pWn.c6yPtO_wi7h,ECB:I5*b8d!cQvJmLxgX9DsaANMFSeU}'
+> b'sdctf{r0l1-uR~pWn.c6yPtO_wi7h,ECB:I5*b8d!KQvJmLxgX9DsaANMFSeU}'
+> b'sdctf{r0l1-uR~pWn.c6yPtO_wi7h,ECB:I5*b8d!cQvJmLxgX95saANMFSeU}'
+> b'sdctf{r0l1-LR~pWn.c6yPtO_wi7h,ECB:I5*b8d!KQvJmLxgX9DsaANMFSeU}'
+> b'sdctf{r0l1-LR~pWn.c6yPtO_wi7h,ECB:I5*b8d!cQvJmLxgX9DsaANMFSeU}'
+> b'sdctf{r0l1-uR~pWn.c6yPtO_wi7h,ECB:I5*b8d!KQvJmLxgX95saANMFSeU}'
+> b'sdctf{r0l1-LR~pWn.c6yPtO_wi7h,ECB:I5*b8d!cQvJmLxgX95saANMFSeU}'
+> ```
+
+full script in [solve2.py](solve2.py)
+
