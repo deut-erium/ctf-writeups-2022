@@ -229,6 +229,7 @@ possible values. Moreover, their order is fixed, which is determined by `key1`.
 If we try to solve for all valid mappings for `AES(binary(sbox(char)))` we will
 probably end up on the correct mapping and get our flag.  
  
+```
 +---------------+---------------+------------------------+---------------+
 |flag0          |    flag1      |                        |   flag55      |
 +---------------+---------------+         ....           +---------------+
@@ -243,7 +244,8 @@ probably end up on the correct mapping and get our flag.
 |   +--+       |                                                          
 +------+-------+-------+------+                                           
 |E(c1) | E(c2) | E(c3) | E(c4)|                                             
-+------+-------+-------+------+                                           
++------+-------+-------+------+   
+```
                                                                           
 ### Enter Z3
 We can assume our flag to be a list of `BitVec` of 7 bits each  
