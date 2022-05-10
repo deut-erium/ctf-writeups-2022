@@ -1,0 +1,1 @@
+window.TEXT_SEARCH_DATA={'posts':[{'title':"Contributions",'url':"/ctf-writeups-2022/2021-04-08-contributions"},{'title':"Welcome",'url':"/ctf-writeups-2022/2021-04-08-welcome"},{'title':"Sdctf Tasty Crypto Roll",'url':"/ctf-writeups-2022/sdctf/tasty_crypto_roll/2022-05-10-SDCTF-Tasty-Crypto-Roll"}]};
