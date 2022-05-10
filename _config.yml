@@ -178,7 +178,7 @@ analytics:
 ##############################
 markdown    : kramdown
 highlighter : rouge
-permalink   : none
+permalink   : /:path
 
 exclude:
   - LICENSE
