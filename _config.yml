@@ -184,6 +184,9 @@ exclude:
   - LICENSE
   - README.md
   - CONTRIBUTING.md
+  - CTFS-2022
+  - directorize.py
+  - jekyll-text-theme.gemspec
 
 defaults:
   - scope:
